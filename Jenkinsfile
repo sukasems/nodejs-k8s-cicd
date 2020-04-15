@@ -15,7 +15,7 @@ pipeline {
         stage('Push image to registry') { 
             steps {
                 script {
-                    docker.withRegistry('http://172.28.128.3:30700', 'nexus-docker') {
+                    docker.withRegistry('http://172.28.128.3:30700', 'nexus-user-and-password') {
                         dockerImage.push()
                         dockerImage.push('latest')
                     }
