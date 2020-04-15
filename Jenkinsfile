@@ -25,14 +25,21 @@ pipeline {
         stage('Deploy to K8s cluster') { 
             steps {
                 script {
-                    withCredentials([kubeconfigFile(credentialsId: 'k8s-config', variable: 'KUBECONFIG')]) {
-                        sh '''
-                            kubectl version
-                            sed -i 's/latest/'"${BUILD_ID}"'/g' nodejs-k8s-cicd-k82-deployment.yaml
-                            kubectl --kubeconfig=${KUBECONFIG} apply -f nodejs-k8s-cicd-k82-deployment.yaml
-                        '''
-                    }
-                    
+                    // withCredentials([kubeconfigFile(credentialsId: 'k8s-config', variable: 'KUBECONFIG')]) {
+                    //     sh '''
+                    //         kubectl version
+                    //         sed -i 's/latest/'"${BUILD_ID}"'/g' nodejs-k8s-cicd-deployment.yaml
+                    //         kubectl --kubeconfig=${KUBECONFIG} apply -f nodejs-k8s-cicd-deployment.yaml
+                    //     '''
+                    // }
+
+                    sh '''
+                      sed -i 's/latest/'"${BUILD_NUMBER}"'/g' nodejs-k8s-cicd-deployment.yaml
+                      sed -i 's/REGIPADD/172.28.128.3:30700/g' nodejs-k8s-cicd-deployment.yaml
+
+                      scp -o StrictHostKeyChecking=no -i ${SSHKEY} nodejs-k8s-cicd-deployment.yaml vagrant@10.0.2.15:/home/vagrant/
+                      ssh -i ${SSHKEY} vagrant@10.0.2.15 kubectl apply -f nodejs-k8s-cicd-deployment.yaml
+                    '''
                 }
             }
         }
