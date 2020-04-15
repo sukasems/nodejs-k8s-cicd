@@ -41,6 +41,7 @@ pipeline {
                         ssh -i ${SSHKEY} vagrant@10.0.2.15 kubectl apply -f nodejs-k8s-cicd-deployment.yaml
                       '''
                     }
+                }
             }
         }
         stage('Remove unused docker image') { 
