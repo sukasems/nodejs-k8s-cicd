@@ -32,15 +32,15 @@ pipeline {
                     //         kubectl --kubeconfig=${KUBECONFIG} apply -f nodejs-k8s-cicd-deployment.yaml
                     //     '''
                     // }
+                    withCredentials([sshUserPrivateKey(credentialsId: 'SSHKEY', variable: 'SSHKEY')]) {
+                      sh '''
+                        sed -i 's/latest/'"${BUILD_NUMBER}"'/g' nodejs-k8s-cicd-deployment.yaml
+                        sed -i 's/REGIPADD/172.28.128.3:30700/g' nodejs-k8s-cicd-deployment.yaml
 
-                    sh '''
-                      sed -i 's/latest/'"${BUILD_NUMBER}"'/g' nodejs-k8s-cicd-deployment.yaml
-                      sed -i 's/REGIPADD/172.28.128.3:30700/g' nodejs-k8s-cicd-deployment.yaml
-
-                      scp -o StrictHostKeyChecking=no -i ${SSHKEY} nodejs-k8s-cicd-deployment.yaml vagrant@10.0.2.15:/home/vagrant/
-                      ssh -i ${SSHKEY} vagrant@10.0.2.15 kubectl apply -f nodejs-k8s-cicd-deployment.yaml
-                    '''
-                }
+                        scp -o StrictHostKeyChecking=no -i ${SSHKEY} nodejs-k8s-cicd-deployment.yaml vagrant@10.0.2.15:/home/vagrant/
+                        ssh -i ${SSHKEY} vagrant@10.0.2.15 kubectl apply -f nodejs-k8s-cicd-deployment.yaml
+                      '''
+                    }
             }
         }
         stage('Remove unused docker image') { 
