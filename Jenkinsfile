@@ -34,7 +34,7 @@ pipeline {
                     // }
                     withCredentials([sshUserPrivateKey(credentialsId: 'vagrant-ssh', keyFileVariable: 'SSHKEY')]) {
                       sh '''
-                        sed -i 's/latest/'"${BUILD_NUMBER}"'/g' nodejs-k8s-cicd-deployment.yaml
+                        sed -i 's/latest/'"${BUILD_ID}"'/g' nodejs-k8s-cicd-deployment.yaml
                         sed -i 's/REGIPADD/172.28.128.3:30700/g' nodejs-k8s-cicd-deployment.yaml
 
                         scp -o StrictHostKeyChecking=no -i ${SSHKEY} nodejs-k8s-cicd-deployment.yaml vagrant@10.0.2.15:/home/vagrant/
