@@ -9,10 +9,9 @@ pipeline {
                 script {
                     def scannerHome = tool 'my-sonar-scanner';
                     withSonarQubeEnv("my-sonar-server") {
-                    sh "${tool("my-sonar-scanner")}/bin/sonar-scanner"
-                                }
-                        }
+                        sh "${tool("my-sonar-scanner")}/bin/sonar-scanner"
                     }
+                }
             }
         }
         stage('Build image') { 
