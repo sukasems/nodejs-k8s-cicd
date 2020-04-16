@@ -4,16 +4,17 @@ pipeline {
         CI = 'true'
     }
     stages {
-        // stage('SonarQube analysis') {
-        //     steps {
-        //         withSonarQubeEnv(credentialsId: 'sonar-jenkins', installationName: 'my-sonar') { // You can override the credential to be used
-        //             //sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar'
-        //         }
-        //         timeout(time: 10, unit: 'MINUTES') {
-        //             waitForQualityGate abortPipeline: true
-        //         }
-        //     }
-        // }
+        stage('SonarQube analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'my-sonar-scanner';
+                    withSonarQubeEnv("my-sonar-server") {
+                    sh "${tool("my-sonar-scanner")}/bin/sonar-scanner"
+                                }
+                        }
+                    }
+            }
+        }
         stage('Build image') { 
             steps {
                 script {
@@ -35,13 +36,6 @@ pipeline {
         stage('Deploy to K8s cluster') { 
             steps {
                 script {
-                    // withCredentials([kubeconfigFile(credentialsId: 'k8s-config', variable: 'KUBECONFIG')]) {
-                    //     sh '''
-                    //         kubectl version
-                    //         sed -i 's/latest/'"${BUILD_ID}"'/g' nodejs-k8s-cicd-deployment.yaml
-                    //         kubectl --kubeconfig=${KUBECONFIG} apply -f nodejs-k8s-cicd-deployment.yaml
-                    //     '''
-                    // }
                     withCredentials([sshUserPrivateKey(credentialsId: 'vagrant-ssh', keyFileVariable: 'SSHKEY')]) {
                       sh '''
                         sed -i 's/latest/'"${BUILD_ID}"'/g' nodejs-k8s-cicd-deployment.yaml
